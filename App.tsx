@@ -21,7 +21,8 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 const App = () => {
   return (
     <ThirdwebProvider
-      activeChain="goerli"
+      autoSwitch={true}
+      activeChain="mumbai"
       supportedWallets={[metamaskWallet(), rainbowWallet(), localWallet()]}>
       <AppInner />
     </ThirdwebProvider>
@@ -73,10 +74,13 @@ const AppInner = () => {
             buttonTitle: 'Let`s connect',
             modalTitle: 'Pick pick',
           }}
+          onSuccess={res => {
+            setText('Success');
+          }}
           onError={err => {
             setText(err.message);
           }}
-          contractAddress="0x2269daD52bb33739318554D8BCa1684001a240d1"
+          contractAddress="0xE2d88171037e44FE0A5d64111e635074b790DE89"
           action={contract => contract?.erc1155.claim(0, 1)}>
           Claim
         </Web3Button>
