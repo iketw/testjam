@@ -4,9 +4,12 @@ import {
   metamaskWallet,
   rainbowWallet,
   ThirdwebProvider,
+  useWallet,
+  Web3Button,
 } from '@thirdweb-dev/react-native';
 import React from 'react';
 import {
+  Button,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -18,7 +21,7 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 const App = () => {
   return (
     <ThirdwebProvider
-      activeChain="mumbai"
+      activeChain="goerli"
       supportedWallets={[metamaskWallet(), rainbowWallet(), localWallet()]}>
       <AppInner />
     </ThirdwebProvider>
@@ -36,11 +39,49 @@ const AppInner = () => {
     ...styles.heading,
   };
 
+  const [text, setText] = React.useState('');
+
+  const wallet = useWallet();
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <View style={styles.view}>
-        <Text style={textStyles}>React Native thirdweb starter</Text>
-        <ConnectWallet />
+        <Text style={textStyles}>React Native thirdweb testjam</Text>
+
+        <View style={{marginBottom: 20}}>
+          <ConnectWallet />
+        </View>
+
+        <View style={{marginBottom: 20}}>
+          <Button
+            title="Sign Message"
+            onPress={() => {
+              wallet
+                ?.signMessage('Hello World')
+                .then(res => {
+                  setText(res);
+                })
+                .catch(err => {
+                  setText(err.message);
+                });
+            }}
+          />
+        </View>
+
+        <Web3Button
+          connectWalletProps={{
+            buttonTitle: 'Let`s connect',
+            modalTitle: 'Pick pick',
+          }}
+          onError={err => {
+            setText(err.message);
+          }}
+          contractAddress="0x2269daD52bb33739318554D8BCa1684001a240d1"
+          action={contract => contract?.erc1155.claim(0, 1)}>
+          Claim
+        </Web3Button>
+
+        <Text>{text}</Text>
       </View>
     </SafeAreaView>
   );
@@ -50,7 +91,8 @@ const styles = StyleSheet.create({
   view: {
     height: '100%',
     display: 'flex',
-    justifyContent: 'center',
+    marginTop: 10,
+    justifyContent: 'flex-start',
     alignItems: 'center',
     alignContent: 'center',
   },
